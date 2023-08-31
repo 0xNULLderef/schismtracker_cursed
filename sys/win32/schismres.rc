@@ -14,8 +14,8 @@ schismicon ICON "icons/schismres.ico"
 
 
 VS_VERSION_INFO        VERSIONINFO
-FILEVERSION            WRC_VERSION
-PRODUCTVERSION         WRC_VERSION
+FILEVERSION            0,0,0,0
+PRODUCTVERSION         0,0,0,0
 FILEFLAGSMASK          VS_FFI_FILEFLAGSMASK
 FILEFLAGS              0
 FILEOS                 VOS__WINDOWS32

@@ -32,6 +32,7 @@
 #include "config-parser.h"
 #include "dmoz.h"
 #include "osdefs.h"
+#include "defines.h"
 
 /* --------------------------------------------------------------------- */
 /* config settings */
@@ -134,8 +135,8 @@ void cfg_load(void)
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
 	cfg_get_string(&cfg, "Video", "interpolation", cfg_video_interpolation, 7, "nearest");
-	cfg_video_width = cfg_get_number(&cfg, "Video", "width", 640);
-	cfg_video_height = cfg_get_number(&cfg, "Video", "height", 400);
+	cfg_video_width = cfg_get_number(&cfg, "Video", "width", WIDESCREEN_WIDTH);
+	cfg_video_height = cfg_get_number(&cfg, "Video", "height", WIDESCREEN_HEIGHT);
 	cfg_video_fullscreen = !!cfg_get_number(&cfg, "Video", "fullscreen", 0);
 	cfg_video_want_fixed = cfg_get_number(&cfg, "Video", "want_fixed", 0);
 	cfg_video_mousecursor = cfg_get_number(&cfg, "Video", "mouse_cursor", MOUSE_EMULATED);

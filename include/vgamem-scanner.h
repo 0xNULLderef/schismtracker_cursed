@@ -1,5 +1,7 @@
+#include "defines.h"
 /* should be included inside draw-char.c */
-void F1(unsigned int ry, unsigned SIZE *out, unsigned int tc[16], unsigned int mouseline[80])
+
+void F1(unsigned int ry, unsigned SIZE *out, unsigned int tc[16], unsigned int mouseline[WIDESCREEN_CHARS_WIDTH])
 {
 	unsigned int *bp;
 	unsigned int dg;
@@ -8,15 +10,15 @@ void F1(unsigned int ry, unsigned SIZE *out, unsigned int tc[16], unsigned int m
 	unsigned int x, y;
 	int fg, bg;
 
-	q = ovl + (ry * 640);
+	q = ovl + (ry * WIDESCREEN_WIDTH);
 	y = ry >> 3;
-	bp = &vgamem_read[y * 80];
+	bp = &vgamem_read[y * WIDESCREEN_CHARS_WIDTH];
 	itf = font_data + (ry & 7);
 	bios = ((uint8_t*) font_default_upper_alt) + (ry & 7);
 	bioslow = ((uint8_t *) font_default_lower) + (ry & 7);
 	hf = font_half_data + ((ry & 7) >> 1);
 
-	for (x = 0; x < 80; x++, bp++, q += 8) {
+	for (x = 0; x < WIDESCREEN_CHARS_WIDTH; x++, bp++, q += 8) {
 		if (!(*bp & 0xc0000000)) {
 			/* regular character */
 			fg = (*bp & 0x0F00) >> 8;

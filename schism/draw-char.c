@@ -70,6 +70,7 @@ the banks are:
 
 #include "util.h"
 #include "video.h"
+#include "defines.h"
 
 /* preprocessor stuff */
 
@@ -366,10 +367,10 @@ void font_init(void)
 }
 
 /* --------------------------------------------------------------------- */
-static unsigned int vgamem[4000];
-static unsigned int vgamem_read[4000];
+static unsigned int vgamem[WIDESCREEN_CHARS_WIDTH * WIDESCREEN_CHARS_HEIGHT];
+static unsigned int vgamem_read[WIDESCREEN_CHARS_WIDTH * WIDESCREEN_CHARS_HEIGHT];
 
-static unsigned char ovl[640*400]; /* 256K */
+static unsigned char ovl[WIDESCREEN_WIDTH * WIDESCREEN_HEIGHT]; /* 256K */
 
 void vgamem_flip(void)
 {
@@ -383,10 +384,10 @@ void vgamem_clear(void)
 
 void vgamem_ovl_alloc(struct vgamem_overlay *n)
 {
-	n->q = &ovl[ (n->x1*8) + (n->y1 * 5120) ];
+	n->q = &ovl[ (n->x1*8) + (n->y1 * WIDESCREEN_WIDTH * 8) ];
 	n->width = 8 * ((n->x2 - n->x1) + 1);
 	n->height = 8 * ((n->y2 - n->y1) + 1);
-	n->skip = (640 - n->width);
+	n->skip = (WIDESCREEN_WIDTH - n->width);
 }
 void vgamem_ovl_apply(struct vgamem_overlay *n)
 {
@@ -394,7 +395,7 @@ void vgamem_ovl_apply(struct vgamem_overlay *n)
 
 	for (y = n->y1; y <= n->y2; y++) {
 		for (x = n->x1; x <= n->x2; x++) {
-			vgamem[x + (y*80)] = 0x80000000;
+			vgamem[x + (y*WIDESCREEN_CHARS_WIDTH)] = 0x80000000;
 		}
 	}
 }
@@ -413,7 +414,7 @@ void vgamem_ovl_clear(struct vgamem_overlay *n, int color)
 }
 void vgamem_ovl_drawpixel(struct vgamem_overlay *n, int x, int y, int color)
 {
-	n->q[ (640*y) + x ] = color;
+	n->q[ (WIDESCREEN_WIDTH*y) + x ] = color;
 }
 static inline void _draw_line_v(struct vgamem_overlay *n, int x,
 		int ys, int ye, int color)
@@ -422,23 +423,23 @@ static inline void _draw_line_v(struct vgamem_overlay *n, int x,
 	int y;
 
 	if (ys < ye) {
-		q += (ys * 640);
+		q += (ys * WIDESCREEN_WIDTH);
 		for (y = ys; y <= ye; y++) {
 			*q = color;
-			q += 640;
+			q += WIDESCREEN_WIDTH;
 		}
 	} else {
-		q += (ye * 640);
+		q += (ye * WIDESCREEN_WIDTH);
 		for (y = ye; y <= ys; y++) {
 			*q = color;
-			q += 640;
+			q += WIDESCREEN_WIDTH;
 		}
 	}
 }
 static inline void _draw_line_h(struct vgamem_overlay *n, int xs,
 		int xe, int y, int color)
 {
-	unsigned char *q = n->q + (y * 640);
+	unsigned char *q = n->q + (y * WIDESCREEN_WIDTH);
 	int x;
 	if (xs < xe) {
 		q += xs;
@@ -548,14 +549,14 @@ void vgamem_ovl_drawline(struct vgamem_overlay *n, int xs,
 
 void draw_char_bios(unsigned char c, int x, int y, uint32_t fg, uint32_t bg)
 {
-    assert(x >= 0 && y >= 0 && x < 80 && y < 50);
-    vgamem[x + (y*80)] = c | (fg << 8) | (bg << 12) | 0x10000000;
+    assert(x >= 0 && y >= 0 && x < WIDESCREEN_CHARS_WIDTH && y < WIDESCREEN_HEIGHT);
+    vgamem[x + (y*WIDESCREEN_CHARS_WIDTH)] = c | (fg << 8) | (bg << 12) | 0x10000000;
 }
 
 void draw_char(unsigned char c, int x, int y, uint32_t fg, uint32_t bg)
 {
-    assert(x >= 0 && y >= 0 && x < 80 && y < 50);
-    vgamem[x + (y*80)] = c | (fg << 8) | (bg << 12);
+    assert(x >= 0 && y >= 0 && x < WIDESCREEN_CHARS_WIDTH && y < WIDESCREEN_HEIGHT);
+    vgamem[x + (y*WIDESCREEN_CHARS_WIDTH)] = c | (fg << 8) | (bg << 12);
 }
 
 int draw_text(const char * text, int x, int y, uint32_t fg, uint32_t bg)
@@ -586,14 +587,14 @@ void draw_fill_chars(int xs, int ys, int xe, int ye, uint32_t color)
 {
 	unsigned int *mm;
 	int x, len;
-	mm = &vgamem[(ys * 80) + xs];
+	mm = &vgamem[(ys * WIDESCREEN_CHARS_WIDTH) + xs];
 	len = (xe - xs)+1;
 	ye -= ys;
 	do {
 		for (x = 0; x < len; x++) {
 			mm[x] = (color << 12) | (color << 8);
 		}
-		mm += 80;
+		mm += WIDESCREEN_CHARS_WIDTH;
 		ye--;
 	} while (ye >= 0);
 }
@@ -628,8 +629,8 @@ int draw_text_bios_len(const char * text, int len, int x, int y, uint32_t fg, ui
 void draw_half_width_chars(uint8_t c1, uint8_t c2, int x, int y,
 			   uint32_t fg1, uint32_t bg1, uint32_t fg2, uint32_t bg2)
 {
-	assert(x >= 0 && y >= 0 && x < 80 && y < 50);
-	vgamem[x + (y*80)] =
+	assert(x >= 0 && y >= 0 && x < WIDESCREEN_CHARS_WIDTH && y < WIDESCREEN_CHARS_HEIGHT);
+	vgamem[x + (y*WIDESCREEN_CHARS_WIDTH)] =
 		0x40000000
 		| (fg1 << 22) | (fg2 << 26)
 		| (bg1 << 18) | (bg2 << 14)

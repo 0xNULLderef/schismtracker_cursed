@@ -20,8 +20,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#define NATIVE_SCREEN_WIDTH             640
-#define NATIVE_SCREEN_HEIGHT            400
+#define NATIVE_SCREEN_WIDTH             WIDESCREEN_WIDTH
+#define NATIVE_SCREEN_HEIGHT            WIDESCREEN_HEIGHT
 #define WINDOW_TITLE			"Schism Tracker"
 
 /* should be the native res of the display (set once and never again)
@@ -77,6 +77,8 @@ static int display_native_y = -1;
 #include "auto/schismico_hires.h"
 #endif
 #endif
+
+#include "defines.h"
 
 extern int macosx_did_finderlaunch;
 
@@ -341,11 +343,11 @@ void video_refresh(void)
 	vgamem_clear();
 }
 
-static inline void make_mouseline(unsigned int x, unsigned int v, unsigned int y, unsigned int mouseline[80])
+static inline void make_mouseline(unsigned int x, unsigned int v, unsigned int y, unsigned int mouseline[WIDESCREEN_CHARS_WIDTH])
 {
 	unsigned int z;
 
-	memset(mouseline, 0, 80*sizeof(unsigned int));
+	memset(mouseline, 0, WIDESCREEN_CHARS_WIDTH*sizeof(unsigned int));
 	if (video.mouse.visible != MOUSE_EMULATED
 	    || !(status.flags & IS_FOCUSED)
 	    || y < video.mouse.y
@@ -355,14 +357,14 @@ static inline void make_mouseline(unsigned int x, unsigned int v, unsigned int y
 
 	z = _mouse_pointer[ y - video.mouse.y ];
 	mouseline[x] = z >> v;
-	if (x < 79) mouseline[x+1] = (z << (8-v)) & 0xff;
+	if (x < (WIDESCREEN_CHARS_WIDTH - 1)) mouseline[x+1] = (z << (8-v)) & 0xff;
 }
 
 static void _blit11(unsigned char *pixels, unsigned int pitch, unsigned int *tpal)
 {
 	unsigned int mouseline_x = (video.mouse.x / 8);
 	unsigned int mouseline_v = (video.mouse.x % 8);
-	unsigned int mouseline[80];
+	unsigned int mouseline[WIDESCREEN_CHARS_WIDTH];
 	unsigned char *pdata;
 	unsigned int x, y;
 	int pitch24;
@@ -443,8 +445,8 @@ void video_translate(unsigned int vx, unsigned int vy, unsigned int *x, unsigned
 	vx /= (video.width - (video.width - video.prev.width));
 	vy /= (video.height - (video.height - video.prev.height));
 
-	*x = (vx < 640) ? (video.mouse.x = vx) : video.mouse.x;
-	*y = (vy < 640) ? (video.mouse.y = vy) : video.mouse.y;
+	*x = (vx < WIDESCREEN_WIDTH) ? (video.mouse.x = vx) : video.mouse.x;
+	*y = (vy < WIDESCREEN_WIDTH) ? (video.mouse.y = vy) : video.mouse.y;
 }
 
 SDL_Window * video_window(void)

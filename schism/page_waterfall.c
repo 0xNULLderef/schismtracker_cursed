@@ -27,8 +27,8 @@
 
 #include <math.h>
 
-#define NATIVE_SCREEN_WIDTH     640
-#define NATIVE_SCREEN_HEIGHT    400
+#define NATIVE_SCREEN_WIDTH     WIDESCREEN_WIDTH
+#define NATIVE_SCREEN_HEIGHT    WIDESCREEN_HEIGHT
 #define FUDGE_256_TO_WIDTH      4
 #define SCOPE_ROWS      32
 
