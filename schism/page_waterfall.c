@@ -26,6 +26,7 @@
 #include "song.h"
 
 #include <math.h>
+#include "defines.h"
 
 #define NATIVE_SCREEN_WIDTH     WIDESCREEN_WIDTH
 #define NATIVE_SCREEN_HEIGHT    WIDESCREEN_HEIGHT
